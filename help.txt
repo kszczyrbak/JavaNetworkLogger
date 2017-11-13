@@ -1,0 +1,65 @@
+Serwer obslugi zdalnego systemu logowania.
+
+Aplikacja pozwala na wyswietlanie logow wysylanych przez inny komputer w sieci, zakladajac ze zna port i hosta serwera. 
+Obsluguje polaczenia TCP i UDP jednoczesnie.
+Wyswietlane logi mozna selekcyjnie filtrowac i zapisywac do pliku. 
+Aplikacja posiada prosty w obsludze interfejs konfiguracyjny. 
+Konfiguracje mozna zapisywac w domyslnej lokalizacji lub w podanej przez uzytkownika lub wczytywac gotowa konfiguracje z pliku.
+
+Aplikacja posiada rowniez wlasny panel konsoli na ktorym wyswietlane sa komunikaty pracy serwera.
+
+Zazwyczaj w pakiecie z serwerem dystrybuowany jest rowniez pakiet klienta, skonfigurowany odpowiednio do pracy z serwerem.
+Posiada mozliwosc wczytania konfiguracji z pliku, specyfikujac nazwe hosta, port oraz typ polaczenia (TCP, UDP).
+
+Otrzymane logi sa pokazywane w postaci tabeli.
+Opis kolumn tabeli:
+
+1) Date: data wyslania logu.
+2) Time : czas wylasnia logu, z dokladnoscia do 1s.
+3) Priority : priorytet logu, w kolejnosci waznosci: 
+	DEBUG, INFO, WARNING, ERROR, CRITICAL
+4) Name : identyfikator loggera.
+5) Thread ID: identyfikator watku loggera, ktory wyslal log.
+6) Hostname : nazwa hosta, z ktorego wyslany zostal log.
+7) Message : wlasciwa tresc logu.
+
+Tabele logow mozna filtrowac, korzystajac z pola tekstowego pod tabela (ignoruje wielkosc znakow!), 
+lub listy unikalnych nazw na prawo od tabeli.
+Do pola tekstowego mozna wpisywac wyrazenia regularne(regexp),
+lub w przypadku gdy chcemy filtrowac wg. wartosci wielu tabeli, uzywac separatora &&, na przyklad:
+2017 && error - tabela wyswietli tylko te logi, ktore zostaly wyslane w roku 2017,
+oraz ktore posiadaja priorytet ERROR lub slowo kluczowe 'error' w polu message.
+Tabele mozna sortowac rosnaco lub malejaco wg. kazdej kolumny.
+
+Opisy kontrolek w menu:
+
+User Panel:
+1) Options.
+	Menu opcji - konfigurowanie serwera.
+	Save as - zapisuje konfiguracje w danym pliku.
+	Save - zapisuje konfiguracje w domyslnym pliku wykorzystywanym przez aplikacje.
+	Load config - wczytuje konfiguracje z pliku. 
+		UWAGA - Nalezy zrestartowac serwer, aby wprowadzic zmiany!
+2) Exit.
+	Wyjscie z programu.
+
+Window:
+1) Save current logs
+	Umozliwa wybranie pliku, do ktorego zostana zapisane obecnie wyswietlane logi.
+2) Load logs from file
+	Umozliwa wczytanie zapisanych logow z pliku i wyswietlenie ich na konsoli.
+
+Biblioteka kliencka do serweru zdalnego logowania.
+
+Umozliwia na wysylanie logow protokolem TCP lub UDP. Posiada piec poziomow priorytetow, rosnaco: DEBUG, INFO, WARNING, ERROR, CRITICAL.
+Obiekt loggera mozna tworzyc, przekazujac mu jako argument plik File zawierajacy konfiguracje klienta, lub korzystajac z domyslnego konstruktora,
+specyfikujac jego nazwe(identyfikator), nazwe hosta serwera, port serwera, typ protokolu (TCP,UDP),
+oraz minimalny poziom logu, ktory ma zostac wyslany.
+
+Przyklad: jesli loggerowi ustawiony zostanie poziom ERROR, polecenia logowania o poziomie DEBUG, INFO i WARNING zostana ignorowane.
+
+W przypadku uzycia protokolu UDP, logger posiada listener, ktory nasluchuje odpowiedzi serwera w celu potwierdzenia, czy log zostal poprawnie wyslany. 
+Wszystkie logi które nie otrzymaly odpowiedzi sa zapisywane w pliku i wysylane ponownie przy ponownym utworzeniu nowego loggera. 
+Uwaga: zapisywane logi sa zapamietywane na podstawie nazwy loggera. 
+Zalecane jest unikanie powtarzania nazw loggera.
+
